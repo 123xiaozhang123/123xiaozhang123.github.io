@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能记事本</title>
+    <style>
+        /* 整合1.css核心样式 */
+        .main {
+            margin: 20px auto;
+            width: 1200px;
+            height: 700px;
+            background-color: rgb(247, 246, 246);
+            border: solid 1px rgb(218, 217, 217);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .topimg img {
+            width: 100%;
+            height: 90%;
+            border-radius: 10px;
+        }
+
+        .select {
+            margin-top: 20px;
+            width: 100%;
+            overflow: hidden;
+            /* 清除浮动 */
+        }
+
+        .select-logo {
+            float: left;
+            width: 250px;
+            height: 150px;
+            /* 固定高度 */
+            margin-right: 15px;
+        }
+
+        .select-logo img {
+            width: 90%;
+            height: 100%;
+            border: solid 3px rgb(166, 166, 166);
+            border-radius: 20px;
+            box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);
+            object-fit: cover;
+            /* 保持图片比例 */
+        }
+
+        .select-zhiye {
+            float: left;
+            width: calc(100% - 265px);
+            /* 自适应宽度 */
+            padding: 15px;
+            font-size: 20px;
+            color: rgb(86, 44, 241);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        select {
+            list-style: none;
+            width: 400px;
+            height: 50px;
+            border: solid 3px rgb(166, 166, 166);
+            background-color: rgb(255, 252, 252);
+            font-size: 18px;
+            padding: 0 10px;
+            margin-top: 10px;
+        }
+
+        #work {
+            width: 500px;
+            font-size: 15px;
+            position: relative;
+            background-color: azure;
+            border: 1px solid rgb(140, 11, 245);
+            padding: 10px;
+            margin: 20px auto;
+        }
+
+        #result {
+            width: 500px;
+            height: 200px;
+            font-size: 20px;
+            color: rgb(174, 5, 240);
+            margin: 15px auto;
+            text-align: center;
+            line-height: 200px;
+            border: 1px dashed rgb(174, 5, 240);
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* 整合jsb.css核心样式 */
+        body {
+            background-color: #ece8e8;
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        .content {
+            margin: 50px auto;
+            border: 1px solid #ccc;
+            box-shadow: #766def 0px 0px 5px;
+            width: 500px;
+            height: 500px;
+            padding: 20px;
+            background-image: url(k.jpg);
+            /* 背景图片路径（需按实际调整） */
+            border-radius: 15px;
+            background-size: cover;
+            /* 背景图片自适应 */
+            background-repeat: no-repeat;
+            background-position: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 背景图片遮罩（提升文字可读性） */
+        .content::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(178, 242, 255, 0.7);
+            /* 半透明遮罩 */
+            border-radius: 15px;
+            z-index: -1;
+        }
+
+        .content p {
+            font-size: 25px;
+            text-align: center;
+            color: rgb(1, 193, 241);
+            margin: 0 0 20px 0;
+            font-weight: bold;
+        }
+
+        .node p {
+            padding: 0;
+            margin: 0;
+            font-size: 18px;
+            color: rgb(0, 171, 244);
+            text-align: left;
+            margin-bottom: 8px;
+        }
+
+        .node p .an {
+            margin-top: 5px;
+            width: 100px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+            font-size: 15px;
+            background-color: rgb(152, 243, 255);
+            border: none;
+            color: rgb(63, 50, 243);
+            box-shadow: #11bee6 1px 2px 0px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .node p .an:hover {
+            background-color: rgb(112, 233, 255);
+            box-shadow: #11bee6 2px 3px 0px;
+            transform: translateY(-2px);
+        }
+
+        .node .thing {
+            margin-top: 10px;
+            width: 300px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            font-size: 15px;
+            border: 1px solid #076dfc2f;
+            background-color: rgba(76, 218, 243, 0.185);
+            color: rgb(0, 171, 244);
+            border-radius: 5px;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .node .t {
+            color: rgb(0, 171, 244);
+            border: 1px solid #076dfc2f;
+            height: 40px;
+            background-color: rgba(76, 218, 243, 0.185);
+            border-radius: 5px;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .t1 {
+            float: right;
+            margin-right: 20px;
+            color: rgb(63, 50, 243);
+            font-weight: 500;
+        }
+
+        #show {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            height: 250px;
+            overflow-y: auto;
+            /* 滚动条 */
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        #show li {
+            font-size: 15px;
+            color: #11bee6;
+            padding: 8px 0;
+            border-bottom: 1px dashed #076dfc2f;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sum {
+            font-size: 20px;
+            color: rgb(250, 2, 2);
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <!-- 顶部图片区域 -->
+        <div class="topimg">
+            <img src="q.jpg" alt="顶部banner"> <!-- 顶部图片（需按实际路径调整） -->
+        </div>
+
+        <!-- 选择区域 -->
+        <div class="select">
+            <div class="select-logo">
+                <img src="h.jpg" alt="logo"> <!-- Logo图片（需按实际路径调整） -->
+            </div>
+            <div class="select-zhiye">
+                <p>选择事项类型</p>
+                <select id="typeSelect">
+                    <option value="">请选择事项分类</option>
+                    <option value="工作">工作事项</option>
+                    <option value="学习">学习事项</option>
+                    <option value="生活">生活事项</option>
+                    <option value="其他">其他事项</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 结果显示区域 -->
+        <div id="result">选择事项类型后查看相关提示</div>
+
+        <!-- 记事本核心区域（整合jsb.css样式） -->
+        <div class="content">
+            <p>智能记事本</p>
+            <div class="node">
+                <p>事项名称：</p>
+                <input type="text" id="name" class="thing" placeholder="输入事项名称">
+
+                <p>日期：</p>
+                <input type="date" id="da" class="t" style="width: 180px;">
+
+                <p>时间：</p>
+                <input type="time" id="t1" class="t" style="width: 180px;">
+
+                <p style="margin-top: 15px;">
+                    <button class="an" onclick="add()">添加事项</button>
+                    <button class="an" onclick="sum()" style="margin-left: 20px;">统计事项</button>
+                </p>
+
+                <ul id="show">
+                    <li>暂无事项</li>
+                </ul>
+
+                <div class="sum" id="sum">
+                    总事项：<span id="zong">0项</span>&nbsp;&nbsp;
+                    待完成：<span id="zweiw">0项</span>&nbsp;&nbsp;
+                    已完成：<span id="yiw">0项</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 整合node.js逻辑（优化统计bug）
+        var thing = [];
+
+        // 添加事项方法
+        function add() {
+            let name = document.getElementById("name").value.trim();
+            let da = document.getElementById("da").value;
+            let t1 = document.getElementById("t1").value;
+
+            // 验证输入
+            if (name === "" || name === "输入事项") {
+                alert("请输入有效的事项名称！");
+                return;
+            }
+            if (da === "") {
+                alert("请选择日期！");
+                return;
+            }
+            if (t1 === "") {
+                alert("请选择时间！");
+                return;
+            }
+
+            // 添加到数组
+            thing.push({
+                name: name,
+                date: da,
+                time: t1,
+                done: "待完成"
+            });
+
+            // 更新显示列表
+            let showList = document.getElementById("show");
+            showList.innerHTML = ""; // 清空原有列表
+            if (thing.length > 0) {
+                thing.forEach(item => {
+                    let li = document.createElement("li");
+                    li.innerHTML = item.name +
+                        "<span class='t1'>" + item.date + "&nbsp;" + item.time + "&nbsp;&nbsp;" + item.done + "</span>";
+                    showList.appendChild(li);
+                });
+            } else {
+                showList.innerHTML = "<li>暂无事项</li>";
+            }
+
+            // 清空输入框
+            document.getElementById("name").value = "";
+            document.getElementById("da").value = "";
+            document.getElementById("t1").value = "";
+        }
+
+        // 统计事项方法（修复已完成统计bug）
+        function sum() {
+            document.getElementById("sum").style.display = "block";
+            document.getElementById("zong").innerHTML = thing.length + "项";
+
+            let wzd = thing.filter(item => item.done === "待完成");
+            let wc = thing.filter(item => item.done === "已完成");
+
+            document.getElementById("zweiw").innerHTML = wzd.length + "项";
+            document.getElementById("yiw").innerHTML = wc.length + "项"; // 原代码此处误用wzd，已修复
+        }
+
+        // 事项类型选择联动（新增功能）
+        document.getElementById("typeSelect").addEventListener("change", function () {
+            let type = this.value;
+            let resultBox = document.getElementById("result");
+            switch (type) {
+                case "工作":
+                    resultBox.innerHTML = "工作事项建议优先处理，设置截止时间提升效率！";
+                    break;
+                case "学习":
+                    resultBox.innerHTML = "学习事项建议拆分目标，逐步完成积累知识！";
+                    break;
+                case "生活":
+                    resultBox.innerHTML = "生活事项关注实用性，合理安排时间享受生活！";
+                    break;
+                case "其他":
+                    resultBox.innerHTML = "自定义事项可灵活设置，记得定期回顾进度！";
+                    break;
+                default:
+                    resultBox.innerHTML = "选择事项类型后查看相关提示";
+            }
+        });
+    </script>
+</body>
+
+</html>
